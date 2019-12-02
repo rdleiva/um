@@ -12,4 +12,7 @@
 
 REGISTER *registers;
 REGISTER *Program_Counter;
+
+/*/ Allocates and initializes registers
+ */
 void initialize_registers();

@@ -6,6 +6,7 @@
 // December 1, 2019                                                                 //
 // segments.c - memory segments implementation                                      //
 //==================================================================================//
+
 #include "seq.h"
 #include "list.h"
 #include <inttypes.h>
@@ -23,6 +24,9 @@
 Seq_T segments;
 Seq_T free_segments;
 
+/*/ unmaps memory segment 
+ * @param mem_seg        	memory segment to be unmapped
+ */
 void unmap_memory_segment(IDENTIFIER mem_seg){
 	Array_T memory_block = Seq_get(segments, mem_seg);
 	Array_free(&memory_block);
@@ -31,6 +35,10 @@ void unmap_memory_segment(IDENTIFIER mem_seg){
 	Seq_addhi(free_segments, value);
 }
 
+/*/ maps memory segment of size word_count
+ * @param word_count		number of words to be mapped 
+ * @return					pointer to free segment or new segment
+ */
 REGISTER map_memory_segment(uint32_t word_count){
 	// initialize array of size word_count to place in memory
 	Array_T segment = Array_new(word_count, sizeof(uint32_t));
@@ -49,6 +57,11 @@ REGISTER map_memory_segment(uint32_t word_count){
 	}
 }
 
+/*/ moves memory segment from source to destination and points to new program
+ * @param source        	memory segment to be moved 
+ * @param program_counter   points to new program counter
+ * @param destination       destination of memory segment being moved
+ */
 void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter, IDENTIFIER destination){
 	if(source == 0){
 		Program_Counter = (IDENTIFIER*)Array_get(Seq_get(segments, 0), program_counter);
@@ -63,12 +76,21 @@ void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter, IDENTIFI
 	Program_Counter = (IDENTIFIER*)Array_get(new_program, program_counter);
 }
 
+/*/ store memory segment 
+ * @param index        		index 
+ * @param segment_index  	segment index
+ * @param value_to_store    value to store
+ */
 void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER value_to_store){
 	Array_T segment = Seq_get(segments, index);
 	REGISTER* value_at_index = Array_get(segment, segment_index);
 	*value_at_index = value_to_store;
 }
 
+/*/ load memory segment 
+ * @param index  	 		index
+ * @param segment_index 	index of segment
+ */
 REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index){
 	Array_T segment = Seq_get(segments, index);
 	//printf("Array_Length:%d, Array_Index:%d\n", Array_length(segment), segment_index);
@@ -76,10 +98,12 @@ REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index){
 	return *value_at_index;
 }
 
+/*/ initialize program
+ * @param program			program to be initialized
+ */
 void initialize_program(Array_T program){
 	segments = Seq_new(SEGMENTS_INITIAL_SIZE);
 	free_segments = Seq_new(SEGMENTS_INITIAL_SIZE);
 	Seq_addlo(segments, program);
 	Program_Counter = (IDENTIFIER*)Array_get(program, 0);
 }
-

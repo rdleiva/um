@@ -15,6 +15,10 @@
 #include "bitpack.h"
 #define WORD uint32_t
 
+/*/ intitializes um program
+ * @param argc			number of files
+ * @param argv			files
+ */
 int main(int argc, const char* argv[]){
 	assert(argc == 2);
 	// open our program instructions file

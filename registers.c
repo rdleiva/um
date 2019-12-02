@@ -10,6 +10,8 @@
 #include "registers.h"
 #include "mem.h"
 
+/*/ Allocates and initializes registers
+ */
 void initialize_registers(){
 	registers = CALLOC(8, sizeof(REGISTER));
 	Program_Counter = 0;

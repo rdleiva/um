@@ -1,3 +1,13 @@
+//==================================================================================//
+// Mikel F Gjergji & Rotman Daniel Leiva Henriquez                                  //
+// Professor Daniels                                                                //
+// CSC411                                                                           //
+// Assignment #6                                                                    //
+// December 1, 2019                                                                 //
+// operation_decoder.c - operation decoder implementation                           //
+//==================================================================================//
+
+
 #include "bitpack.h"
 #include "instructions.h"
 #include "registers.h"
@@ -12,6 +22,9 @@
 #define A_START 9
 #define WORD uint32_t
 
+/*/ takes in operation code and performs that instruction 
+ * @param word		operation code
+ */
 void perform_operation(uint32_t word){
 	
 	uint64_t code = Bitpack_getu(word, CODE_SIZE, CODE_LSB);
@@ -34,6 +47,9 @@ void perform_operation(uint32_t word){
 	}
 }
 
+/*/ takes in program and starts it
+ * @param program	program to be started
+ */
 void begin_program(Array_T program){
 	initialize_registers();
 	initialize_program(program);
