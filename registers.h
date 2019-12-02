@@ -10,5 +10,6 @@
 #include <inttypes.h>
 #define REGISTER uint32_t
 
-REGISTER registers[8] = {0};
-REGISTER *Program_Counter = 0;
+REGISTER *registers;
+REGISTER *Program_Counter;
+void initialize_registers();

@@ -11,6 +11,9 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include "array.h"
+#include "mem.h"
+#include "bitpack.h"
+#define WORD uint32_t
 
 int main(int argc, const char* argv[]){
 	assert(argc == 2);
@@ -22,24 +25,25 @@ int main(int argc, const char* argv[]){
 	rewind(program);
 	
 	// initialize array to hold program instructions
-	Array_T program_sequence = Array_new(number_of_bytes, sizeof(WORD));
+	Array_T program_sequence = Array_new(number_of_bytes/sizeof(WORD), sizeof(WORD));
 
 	// load program to sequence
 	WORD word = 0;
-	char arr[sizeof(WORD)];
-	int iterator = 0;
-	int position_in_array = 0;
-	while(1){
-		int ch = getc(file);
-		if(ch == EOF) break;
-		arr[iterator++] = ch;
-		if(iterator == sizeof(WORD)){
-			word = *((WORD*) arr);
-			WORD* value_we_are_storing = Array_get(program_sequence, position_in_array++);
-			*value_we_are_storing = word;
-			iterator = 0;
-		}
+	long int position_in_array = 0;
+	unsigned char ch;
+	while(position_in_array < Array_length(program_sequence)){
+		ch = getc(program);
+		word = Bitpack_newu(word, 8, 32 - 8, (unsigned)ch);
+		ch = getc(program);
+		word = Bitpack_newu(word, 8, 32 - 16, (unsigned)ch);
+		ch = getc(program);
+		word = Bitpack_newu(word, 8, 32 - 24, (unsigned)ch);
+		ch = getc(program);
+		word = Bitpack_newu(word, 8, 32 - 32, (unsigned)ch);
+		WORD* value_we_are_storing = Array_get(program_sequence, position_in_array++);
+		*value_we_are_storing = word;
 	}
-	
+
 	begin_program(program_sequence);
+
 }

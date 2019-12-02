@@ -138,7 +138,7 @@ void input(REGISTER* ra, REGISTER* rb, REGISTER* rc){
  */
 void load_program(REGISTER* ra, REGISTER* rb, REGISTER* rc){
     (void)ra;
-    if(*rb != 0) move_memory_segment(*rb, *rc, 0);
+    move_memory_segment(*rb, *rc, 0);
 }
 
 /*/ Stores the value located within the word into a register located within the word
@@ -148,3 +148,19 @@ void load_program(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 void load_value(REGISTER* ra, WORD_SIZE value){
     *ra = value;
 }
+
+void(*instructions[NUMBER_OF_INSTRUCTIONS-1])(REGISTER* ra, REGISTER* rb, REGISTER* rc) = {
+	conditional_move,
+	load,
+	store,
+	add,
+	multiply,
+	divide,
+	nand,
+	halt,
+	map_segment,
+	unmap_segment,
+	output,
+	input,
+	load_program
+};

@@ -11,7 +11,8 @@
 
 #include <inttypes.h>
 #include "array.h"
-
+#include "seq.h"
+#include "list.h"
 #define REGISTER uint32_t
 #define IDENTIFIER uint32_t
 #define WORD_SIZE uint32_t
@@ -22,5 +23,6 @@ void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter, IDENTIFI
 void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER value_to_store);
 REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index);
 void initialize_program(Array_T program);
+REGISTER get_next_instruction();
 
 #endif

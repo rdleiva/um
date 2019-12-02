@@ -12,48 +12,55 @@
 #include "array.h"
 #include "registers.h"
 #include <stddef.h>
+#include <stdio.h>
+#include "segments.h"
+#include "mem.h"
+
 #define IDENTIFIER uint32_t
 #define REGISTER uint32_t
-#define SEGMENTS_INITIAL_SIZE 2
+#define SEGMENTS_INITIAL_SIZE 1 
 
 Seq_T segments;
-List_T free_segments = NULL;
+Seq_T free_segments;
 
 void unmap_memory_segment(IDENTIFIER mem_seg){
 	Array_T memory_block = Seq_get(segments, mem_seg);
 	Array_free(&memory_block);
-	List_push(free_segments, &mem_seg);
+	IDENTIFIER* value = CALLOC(4, 1);
+	*value = mem_seg;
+	Seq_addhi(free_segments, value);
 }
 
 REGISTER map_memory_segment(uint32_t word_count){
-	// pops first item from list and if still null, means no free spots in current sequence of segments
-	IDENTIFIER* free_segment;
-	List_pop(free_segments, &free_segment);
-	
 	// initialize array of size word_count to place in memory
 	Array_T segment = Array_new(word_count, sizeof(uint32_t));
 
 	// if we were unable to find a free segment, then add new spot in sequence
-	if(!free_segment){
+	if(Seq_length(free_segments) == 0){
 		Seq_addhi(segments, segment);
 		return Seq_length(segments) - 1;
 	}
 
 	// else we put our new allocation in the free spot
 	else{
+		IDENTIFIER* free_segment = Seq_remhi(free_segments);
 		Seq_put(segments, *free_segment, segment);
 		return *free_segment;
 	}
 }
 
 void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter, IDENTIFIER destination){
+	if(source == 0){
+		Program_Counter = (IDENTIFIER*)Array_get(Seq_get(segments, 0), program_counter);
+		return;
+	}
 	// get new program to load
 	Array_T new_program = Seq_get(segments, source);
-	// place new program in program slot 0, and free previous program
-	Array_T previous_program = Seq_put(segments, 0, Array_copy(new_program, Array_size(new_program)));
+	// place new program in program slot 'destination', and free previous program
+	Array_T previous_program = Seq_put(segments, destination, Array_copy(new_program, Array_length(new_program)));
 	Array_free(&previous_program);
 	// set program counter to specified program counter
-	Program_Counter = Array_get(new_program, program_counter);
+	Program_Counter = (IDENTIFIER*)Array_get(new_program, program_counter);
 }
 
 void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER value_to_store){
@@ -64,13 +71,15 @@ void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER v
 
 REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index){
 	Array_T segment = Seq_get(segments, index);
+	//printf("Array_Length:%d, Array_Index:%d\n", Array_length(segment), segment_index);
 	REGISTER* value_at_index = Array_get(segment, segment_index);
 	return *value_at_index;
 }
 
 void initialize_program(Array_T program){
 	segments = Seq_new(SEGMENTS_INITIAL_SIZE);
-	List_push(free_segments, SEGMENTS_INITIAL_SIZE-1);
-	Seq_put(segments, 0, program);
-	Program_Counter = Array_get(program, 0);
+	free_segments = Seq_new(SEGMENTS_INITIAL_SIZE);
+	Seq_addlo(segments, program);
+	Program_Counter = (IDENTIFIER*)Array_get(program, 0);
 }
+

@@ -103,21 +103,7 @@ void input(REGISTER* ra, REGISTER* rb, REGISTER* rc);
 void load_program(REGISTER* ra, REGISTER* rb, REGISTER* rc);
 
 // Access to array of instruction functions
-void(*instructions[NUMBER_OF_INSTRUCTIONS-1])(REGISTER* ra, REGISTER* rb, REGISTER* rc) = {
-	conditional_move,
-	load,
-	store,
-	add,
-	multiply,
-	divide,
-	nand,
-	halt,
-	map_segment,
-	unmap_segment,
-	output,
-	input,
-	load_program
-};
+void(*instructions[NUMBER_OF_INSTRUCTIONS-1])(REGISTER* ra, REGISTER* rb, REGISTER* rc);
 
 /*/ Stores the value located within the word into a register located within the word
  * @param ra        register a
