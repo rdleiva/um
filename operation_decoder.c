@@ -19,31 +19,44 @@
 #define CODE_SIZE 4
 #define CODE_LSB 28
 #define INSTRUCTION_SIZE 3
-#define A_START 9
+#define A_LSB 6
+#define A_SPECIAL_LSB 25
+#define B_LSB 3
+#define C_LSB 0
+#define VALUE_SIZE 25
+#define VALUE_LSB 0
 #define WORD uint32_t
 
 /*/ takes in operation code and performs that instruction 
  * @param word		operation code
  */
-void perform_operation(uint32_t word){
-	
-	uint64_t code = Bitpack_getu(word, CODE_SIZE, CODE_LSB);
-	//printf("CODE:%ld\n", code);
-	if (code < 13){
-		uint64_t A = Bitpack_getu(word, INSTRUCTION_SIZE, A_START-INSTRUCTION_SIZE);
-		uint64_t B = Bitpack_getu(word, INSTRUCTION_SIZE, A_START-(2*INSTRUCTION_SIZE));
-		uint64_t C = Bitpack_getu(word, INSTRUCTION_SIZE, A_START-(3*INSTRUCTION_SIZE));
-		(*instructions[code]) (&registers[A], &registers[B], &registers[C]);
-	}
+// Precompute masks
+WORD mask = ~(~0U << INSTRUCTION_SIZE);
+WORD codemask = ~(~0U << CODE_SIZE);
+WORD valuemask = ~(~0U << VALUE_SIZE);
 
-	else if (code == 13){
-		uint64_t A = Bitpack_getu(word, INSTRUCTION_SIZE, CODE_LSB-INSTRUCTION_SIZE);
-		uint64_t value = Bitpack_getu(word, sizeof(WORD)*8 - CODE_SIZE - INSTRUCTION_SIZE, 0);
-		load_value(&registers[A], value);
-	}
+void perform_operations(){
 
-	else{
-		exit(1);
+	uint64_t A,B,C,value,code;
+	WORD word;
+	while(1){
+
+		word = *(Program_Counter++);
+		code = (word >> CODE_LSB) & codemask;
+
+		if (code < 13){
+			if(code <= 6) A = (word >> A_LSB) & mask;
+			if(!(code >= 9 && code <= 11)) B = (word >> B_LSB) & mask;
+			C = (word >> C_LSB) & mask;
+			(*instructions[code]) (&registers[A], &registers[B], &registers[C]);
+		}
+
+		else{
+			A = (word >> A_SPECIAL_LSB) & mask;
+			value = (word >> VALUE_LSB) & valuemask;
+			load_value(&registers[A], value);
+		}
+
 	}
 }
 
@@ -53,7 +66,5 @@ void perform_operation(uint32_t word){
 void begin_program(Array_T program){
 	initialize_registers();
 	initialize_program(program);
-	while(1){
-		perform_operation(*(Program_Counter++));
-	}
+	perform_operations();
 }

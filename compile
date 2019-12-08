@@ -36,7 +36,7 @@ done
 # link together .o files + libraries to make executable binaries
 # using one case statement per executable binary
 case $link in
-  all|um) gcc $FLAGS $LFLAGS -o um instructions.o \
+  all|um) gcc $FLAGS $LFLAGS -O1 -o um instructions.o \
                   registers.o segments.o operation_decoder.o um.o \
                   $LIBS 
               	  linked=yes ;;

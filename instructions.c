@@ -138,7 +138,7 @@ void input(REGISTER* ra, REGISTER* rb, REGISTER* rc){
  */
 void load_program(REGISTER* ra, REGISTER* rb, REGISTER* rc){
     (void)ra;
-    move_memory_segment(*rb, *rc, 0);
+    move_memory_segment(*rb, *rc);
 }
 
 /*/ Stores the value located within the word into a register located within the word

@@ -16,7 +16,7 @@
 /*/ takes in operation code and performs that instruction 
  * @param word		operation code
  */
-void perform_operation(uint32_t word);
+void perform_operations();
 
 /*/ takes in program and starts it
  * @param program	program to be started

@@ -34,7 +34,7 @@ REGISTER map_memory_segment(uint32_t word_count);
  * @param program_counter   points to new program counter
  * @param destination       destination of memory segment being moved
  */
-void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter, IDENTIFIER destination);
+void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter);
 
 /*/ store memory segment 
  * @param index        		index 

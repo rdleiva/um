@@ -33,19 +33,16 @@ int main(int argc, const char* argv[]){
 
 	// load program to sequence
 	WORD word = 0;
-	long int position_in_array = 0;
-	unsigned char ch;
-	while(position_in_array < Array_length(program_sequence)){
-		ch = getc(program);
-		word = Bitpack_newu(word, 8, 32 - 8, (unsigned)ch);
-		ch = getc(program);
-		word = Bitpack_newu(word, 8, 32 - 16, (unsigned)ch);
-		ch = getc(program);
-		word = Bitpack_newu(word, 8, 32 - 24, (unsigned)ch);
-		ch = getc(program);
-		word = Bitpack_newu(word, 8, 32 - 32, (unsigned)ch);
-		WORD* value_we_are_storing = Array_get(program_sequence, position_in_array++);
-		*value_we_are_storing = word;
+	unsigned char buffer[4] = {0, 0, 0, 0};
+	int length = Array_length(program_sequence);
+	WORD* value_we_are_storing = Array_get(program_sequence, 0);
+	for(int i = 0; i < length; i++){
+		buffer[0] = getc(program);
+		buffer[1] = getc(program);
+		buffer[2] = getc(program);
+		buffer[3] = getc(program);
+		word = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+		*(value_we_are_storing++) = word;
 	}
 
 	begin_program(program_sequence);
