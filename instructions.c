@@ -25,8 +25,7 @@ void conditional_move(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 }
 
 /*/ Loads value in memory segment identified by rb and word offset rc into ra
- * @param seg_mem   memory segment
- * @param ra        register a
+ * @param ra        memory segment to be loaded
  * @param rb        register b
  * @param rc        register c
  */
@@ -35,8 +34,7 @@ void load(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 }
 
 /*/ Store value in rc into segment identified by ra at the word offset of rb
- * @param mem_seg   memory segment
- * @param ra        register a
+ * @param ra        memory segment to be stored
  * @param rb        register b
  * @param rc        register c
  */
@@ -90,9 +88,9 @@ void halt(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 }
 
 /*/ Creates new memory segment of length rc and stores it's identifier into rb
- * @param mem_seg   memory segment
- * @param rb        register b
- * @param rc        register c
+ * @param ra        void
+ * @param rb        identifier storage
+ * @param rc        lenth of memory segment to be mapped
  */
 void map_segment(REGISTER* ra, REGISTER* rb, REGISTER* rc){
     (void)ra;
@@ -100,8 +98,9 @@ void map_segment(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 }
 
 /*/ Unmaps the memory segment identified by rc
- * @param mem_seg   memory segment
- * @param rc        register c
+ * @param ra        void
+ * @param rb        void
+ * @param rc        memory segment to be unmapped
  */
 void unmap_segment(REGISTER* ra, REGISTER* rb, REGISTER *rc){
     (void)ra;
@@ -110,7 +109,9 @@ void unmap_segment(REGISTER* ra, REGISTER* rb, REGISTER *rc){
 }
 
 /*/ Displays the value in rc on the I/O device if it is in the range of 0-255
- * @param rc        register c
+ * @param ra        void
+ * @param rb        void
+ * @param rc        output
  */
 void output(REGISTER* ra, REGISTER* rb, REGISTER* rc){
     (void)ra;
@@ -120,7 +121,9 @@ void output(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 
 /*/ UM waits for input on I/o device and when it arrives it is stored
  * in rc if it's in the range of 0-255. 
- * @param rc        register c
+ * @param ra        void
+ * @param rb        void
+ * @param rc        input
  */
 void input(REGISTER* ra, REGISTER* rb, REGISTER* rc){
     (void)ra;
@@ -132,7 +135,7 @@ void input(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 /*/ Loads memory segment identified by rb and creates a copy to replace the content
  * of memory segment 0 which is abandoned.  Program counter is then set to point to
  * the memory segment stored at memory segment 0 at the word offset of rc
- * @param mem_seg   memory segment
+ * @param ra        void
  * @param rb        register b
  * @param rc        register c
  */
@@ -143,12 +146,13 @@ void load_program(REGISTER* ra, REGISTER* rb, REGISTER* rc){
 
 /*/ Stores the value located within the word into a register located within the word
  * @param ra        register a
- * @param word      word
+ * @param value     value to be loaded into ra
  */
 void load_value(REGISTER* ra, WORD_SIZE value){
     *ra = value;
 }
 
+/*/ Instructions Array*/
 void(*instructions[NUMBER_OF_INSTRUCTIONS-1])(REGISTER* ra, REGISTER* rb, REGISTER* rc) = {
 	conditional_move,
 	load,
