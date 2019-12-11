@@ -17,7 +17,7 @@
 #include "segments.h"
 #include "mem.h"
 #include "stack.h"
-
+#include <stdlib.h>
 #define IDENTIFIER uint32_t
 #define REGISTER uint32_t
 #define SEGMENTS_INITIAL_SIZE 1 
@@ -29,8 +29,8 @@ Stack_T free_segments;
  * @param mem_seg        	memory segment to be unmapped
  */
 void unmap_memory_segment(IDENTIFIER mem_seg){
-	Array_T memory_block = Seq_get(segments, mem_seg);
-	Array_free(&memory_block);
+	IDENTIFIER* memory_block = Seq_get(segments, mem_seg);
+	free(memory_block);
 	IDENTIFIER* value = ALLOC(4);
 	*value = mem_seg;
 	Stack_push(free_segments, value);
@@ -42,7 +42,7 @@ void unmap_memory_segment(IDENTIFIER mem_seg){
  */
 REGISTER map_memory_segment(uint32_t word_count){
 	// initialize array of size word_count to place in memory
-	Array_T segment = Array_new(word_count, sizeof(uint32_t));
+	IDENTIFIER* segment = calloc(word_count, sizeof(uint32_t));
 
 	// if we were unable to find a free segment, then add new spot in sequence
 	if(Stack_empty(free_segments) == 1){
@@ -65,20 +65,21 @@ REGISTER map_memory_segment(uint32_t word_count){
  */
 void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter){
 	if(source == 0){
-		Program_Counter = Array_get(Seq_get(segments, 0), program_counter);
+		IDENTIFIER* program = Seq_get(segments, 0);
+		Program_Counter = program + program_counter;
 		return;
 	}
 	// get new program to load
-	Array_T new_program = Seq_get(segments, source);
+	IDENTIFIER* new_program = Seq_get(segments, source);
 	// place new program in program slot 'destination', and free previous program
-	Array_T previous_program = Seq_put(segments, 0, new_program);
-	Array_free(&previous_program);
+	IDENTIFIER* previous_program = Seq_put(segments, 0, new_program);
+	free(previous_program);
 	// ADDED THIS STACK PUSH
 	IDENTIFIER* value = ALLOC(4);
 	*value = source;
 	Stack_push(free_segments, value);
 	// set program counter to specified program counter
-	Program_Counter = Array_get(new_program, program_counter);
+	Program_Counter = new_program + program_counter;
 }
 
 /*/ store memory segment 
@@ -87,9 +88,8 @@ void move_memory_segment(IDENTIFIER source, IDENTIFIER program_counter){
  * @param value_to_store    value to store
  */
 void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER value_to_store){
-	Array_T segment = Seq_get(segments, index);
-	IDENTIFIER* value = Array_get(segment, segment_index);
-	*value = value_to_store;
+	IDENTIFIER* segment = Seq_get(segments, index);
+	segment[segment_index] = value_to_store;
 }
 
 /*/ load memory segment 
@@ -97,16 +97,16 @@ void store_memory_segment(IDENTIFIER index, IDENTIFIER segment_index, REGISTER v
  * @param segment_index 	index of segment
  */
 REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index){
-	Array_T segment = Seq_get(segments, index);
-	return *(IDENTIFIER*)Array_get(segment, segment_index);
+	IDENTIFIER* segment = Seq_get(segments, index);
+	return segment[segment_index];
 }
 
 /*/ initialize program
  * @param program			program to be initialized
  */
-void initialize_program(Array_T program){
+void initialize_program(IDENTIFIER* program){
 	segments = Seq_new(SEGMENTS_INITIAL_SIZE);
 	free_segments = Stack_new();
 	Seq_addlo(segments, program);
-	Program_Counter = Array_get(program, 0);
+	Program_Counter = program;
 }

@@ -31,14 +31,15 @@
  * @param word		operation code
  */
 // Precompute masks
-WORD mask = ~(~0U << INSTRUCTION_SIZE);
-WORD codemask = ~(~0U << CODE_SIZE);
-WORD valuemask = ~(~0U << VALUE_SIZE);
 
 void perform_operations(){
 
 	uint64_t A,B,C,value,code;
 	WORD word;
+	WORD mask = ~(~0U << INSTRUCTION_SIZE);
+	WORD codemask = ~(~0U << CODE_SIZE);
+	WORD valuemask = ~(~0U << VALUE_SIZE);
+
 	while(1){
 
 		word = *(Program_Counter++);
@@ -63,7 +64,7 @@ void perform_operations(){
 /*/ takes in program and starts it
  * @param program	program to be started
  */
-void begin_program(Array_T program){
+void begin_program(IDENTIFIER* program){
 	initialize_registers();
 	initialize_program(program);
 	perform_operations();

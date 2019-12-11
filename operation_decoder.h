@@ -21,5 +21,5 @@ void perform_operations();
 /*/ takes in program and starts it
  * @param program	program to be started
  */
-void begin_program(Array_T program);
+void begin_program(uint32_t* program);
 #endif

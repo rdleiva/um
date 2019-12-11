@@ -66,7 +66,7 @@ void multiply(REGISTER* ra, REGISTER* rb, REGISTER* rc){
  * @param rc        register c
  */
 void divide(REGISTER* ra, REGISTER* rb, REGISTER* rc){
-    assert(*rc != 0);
+    //assert(*rc != 0);
     *ra = (*rb / *rc);
 }
 

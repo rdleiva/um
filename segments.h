@@ -52,6 +52,6 @@ REGISTER load_memory_segment(IDENTIFIER index, IDENTIFIER segment_index);
 /*/ initialize program
  * @param program			program to be initialized
  */
-void initialize_program(Array_T program);
+void initialize_program(IDENTIFIER* program);
 
 #endif

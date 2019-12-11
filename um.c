@@ -13,6 +13,7 @@
 #include "array.h"
 #include "mem.h"
 #include "bitpack.h"
+#include <stdlib.h>
 #define WORD uint32_t
 
 /*/ intitializes um program
@@ -29,20 +30,18 @@ int main(int argc, const char* argv[]){
 	rewind(program);
 	
 	// initialize array to hold program instructions
-	Array_T program_sequence = Array_new(number_of_bytes/sizeof(WORD), sizeof(WORD));
+	WORD* program_sequence = malloc(number_of_bytes/sizeof(WORD)*sizeof(WORD));
 
 	// load program to sequence
-	WORD word = 0;
 	unsigned char buffer[4] = {0, 0, 0, 0};
-	int length = Array_length(program_sequence);
-	WORD* value_we_are_storing = Array_get(program_sequence, 0);
+	int length = number_of_bytes/4;
+	WORD* value_we_are_storing = program_sequence;
 	for(int i = 0; i < length; i++){
 		buffer[0] = getc(program);
 		buffer[1] = getc(program);
 		buffer[2] = getc(program);
 		buffer[3] = getc(program);
-		word = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
-		*(value_we_are_storing++) = word;
+		*(value_we_are_storing++) = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
 	}
 
 	begin_program(program_sequence);
